@@ -2,6 +2,8 @@ import {SubmitHandler, useForm} from "react-hook-form";
 import {Box, Button, styled, TextField} from "@mui/material";
 import PageContainer from "../../../components/pageContainer";
 import {Link} from "react-router-dom";
+import {useContext, useState} from "react";
+import {AuthContext} from "../../../services/auth/AuthProvider.tsx";
 
 const StyledContainer = styled(Box)(({ theme }) => ({
     width: "100%",
@@ -25,11 +27,15 @@ type TLogin = {
 }
 
 const Login = () => {
-    const {register, handleSubmit} = useForm<TLogin>()
+    const [logingIn, setLogingIn] = useState(false);
 
-        const onSubmit: SubmitHandler<TLogin> = (data) => {
-            console.log(data);
-        }
+    const {register: registerInput, handleSubmit} = useForm<TLogin>()
+    const { login } = useContext(AuthContext);
+    const onSubmit: SubmitHandler<TLogin> = async (data) => {
+        setLogingIn(true);
+        await login(data);
+        setLogingIn(false);
+    }
 
     return(
         <PageContainer>
@@ -38,14 +44,14 @@ const Login = () => {
                 onSubmit={handleSubmit(onSubmit)}
             >
                 <TextField
-                    {...register(("email"))}
+                    {...registerInput(("email"))}
                     required
                     label="Email"
                     name="email"
                     fullWidth
                 />
                 <TextField
-                    {...register(("password"))}
+                    {...registerInput(("password"))}
                     type={"password"}
                     required
                     label="Senha"

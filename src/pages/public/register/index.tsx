@@ -2,6 +2,8 @@ import {SubmitHandler, useForm} from "react-hook-form";
 import {Box, Button, styled, TextField} from "@mui/material";
 import PageContainer from "../../../components/pageContainer";
 import {Link} from "react-router-dom";
+import {AuthContext} from "../../../services/auth/AuthProvider.tsx";
+import {useContext} from "react";
 
 const StyledContainer = styled(Box)(({ theme }) => ({
     width: "100%",
@@ -26,10 +28,12 @@ type TRegister = {
 }
 
 const Register = () => {
-    const {register, handleSubmit} = useForm<TRegister>()
+    const { register: registerInput, handleSubmit } = useForm<TRegister>()
+    const { register } = useContext(AuthContext);
 
     const onSubmit: SubmitHandler<TRegister> = (data) => {
         console.log(data);
+        register(data)
     }
 
     return(
@@ -39,21 +43,21 @@ const Register = () => {
                 onSubmit={handleSubmit(onSubmit)}
             >
                 <TextField
-                    {...register(("name"))}
+                    {...registerInput(("name"))}
                     required
                     label="Nome"
                     name="name"
                     fullWidth
                 />
                 <TextField
-                    {...register(("email"))}
+                    {...registerInput(("email"))}
                     required
                     label="Email"
                     name="email"
                     fullWidth
                 />
                 <TextField
-                    {...register(("password"))}
+                    {...registerInput(("password"))}
                     type={"password"}
                     required
                     label="Senha"
