@@ -35,7 +35,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try{
             const loginResp =  await authApi.signIn(data);
             localStorage.setItem('token', JSON.stringify(loginResp.access_token));
-            console.log(loginResp.access_token);
         } catch (e) {
             alert("Erro ao fazer login")
         }
