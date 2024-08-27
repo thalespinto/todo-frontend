@@ -1,7 +1,7 @@
 import {SubmitHandler, useForm} from "react-hook-form";
 import {Box, Button, styled, TextField} from "@mui/material";
 import PageContainer from "../../../components/pageContainer";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {AuthContext} from "../../../services/auth/AuthProvider.tsx";
 import {useContext} from "react";
 
@@ -28,12 +28,14 @@ type TRegister = {
 }
 
 const Register = () => {
+    const navigate = useNavigate()
+
     const { register: registerInput, handleSubmit } = useForm<TRegister>()
     const { register } = useContext(AuthContext);
 
-    const onSubmit: SubmitHandler<TRegister> = (data) => {
-        console.log(data);
-        register(data)
+    const onSubmit: SubmitHandler<TRegister> = async (data) => {
+        await register(data)
+        navigate("/");
     }
 
     return(

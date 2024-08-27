@@ -1,7 +1,7 @@
 import {SubmitHandler, useForm} from "react-hook-form";
 import {Box, Button, styled, TextField} from "@mui/material";
 import PageContainer from "../../../components/pageContainer";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {useContext, useState} from "react";
 import {AuthContext} from "../../../services/auth/AuthProvider.tsx";
 
@@ -27,6 +27,8 @@ type TLogin = {
 }
 
 const Login = () => {
+    const navigate = useNavigate()
+
     const [logingIn, setLogingIn] = useState(false);
 
     const {register: registerInput, handleSubmit} = useForm<TLogin>()
@@ -35,6 +37,7 @@ const Login = () => {
         setLogingIn(true);
         await login(data);
         setLogingIn(false);
+        navigate("/home");
     }
 
     return(
