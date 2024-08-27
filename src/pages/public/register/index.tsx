@@ -19,17 +19,18 @@ const StyledContainer = styled(Box)(({ theme }) => ({
 }));
 
 
-type TLogin = {
+type TRegister = {
+    name: string;
     email: string;
     password: string;
 }
 
-const Login = () => {
-    const {register, handleSubmit} = useForm<TLogin>()
+const Register = () => {
+    const {register, handleSubmit} = useForm<TRegister>()
 
-        const onSubmit: SubmitHandler<TLogin> = (data) => {
-            console.log(data);
-        }
+    const onSubmit: SubmitHandler<TRegister> = (data) => {
+        console.log(data);
+    }
 
     return(
         <PageContainer>
@@ -37,6 +38,13 @@ const Login = () => {
                 as="form"
                 onSubmit={handleSubmit(onSubmit)}
             >
+                <TextField
+                    {...register(("name"))}
+                    required
+                    label="Nome"
+                    name="name"
+                    fullWidth
+                />
                 <TextField
                     {...register(("email"))}
                     required
@@ -52,12 +60,12 @@ const Login = () => {
                     name="password"
                     fullWidth
                 />
-                <Button variant="contained" type={"submit"} >Entrar</Button>
-                <Link to="/register" >Criar uma conta</Link>
+                <Button variant="contained" type={"submit"} >Cadastrar</Button>
+                <Link to="/">Já tem uma conta?</Link>
             </StyledContainer>
         </PageContainer>
 
     )
 }
 
-export default Login;
+export default Register;
