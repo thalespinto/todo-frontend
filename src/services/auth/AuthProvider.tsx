@@ -1,7 +1,8 @@
-import {createContext, useState, useEffect, ReactNode, useMemo} from 'react';
+import {createContext, useState, ReactNode, useMemo} from 'react';
 import {User} from "../../types/user.types.ts";
 import {AuthApi} from "./authApi.ts";
 import {TSignIn} from "./authApi.types.ts";
+import {api} from "../api.ts";
 
 type AuthContextType = {
     user: User | null;
@@ -19,23 +20,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const authApi = useMemo(() => new AuthApi(), [])
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-
-        if (token) {
-            //Todo redirect to login page
-        }
-    }, []);
-
     const register = async (userData: User) => {
         await authApi.register(userData);
     }
 
     const login = async (data: TSignIn) => {
         try{
-            const loginResp =  await authApi.signIn(data);
-            localStorage.setItem('token', JSON.stringify(loginResp.access_token));
-        } catch (e) {
+            const { access_token } =  await authApi.signIn(data);
+            localStorage.setItem('token', JSON.stringify(access_token));
+            api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+        } catch {
             alert("Erro ao fazer login")
         }
         setIsAuthenticated(true);
