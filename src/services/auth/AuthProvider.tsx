@@ -27,13 +27,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const login = async (data: TSignIn) => {
         try{
             const { access_token } =  await authApi.signIn(data);
-            localStorage.setItem('token', JSON.stringify(access_token));
+            localStorage.setItem('token', access_token);
             api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+            setIsAuthenticated(true);
         } catch {
             alert("Erro ao fazer login")
         }
-        setIsAuthenticated(true);
+
     };
+    if(localStorage.getItem('token'))
+        api.defaults.headers.common['Authorization'] = `Bearer ${(localStorage.getItem('token'))}`;
 
     const logout = () => {
         // Função para fazer logout
