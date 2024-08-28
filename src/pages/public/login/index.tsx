@@ -1,9 +1,10 @@
 import {SubmitHandler, useForm} from "react-hook-form";
-import {Box, Button, styled, TextField} from "@mui/material";
+import {Box, styled, TextField} from "@mui/material";
 import PageContainer from "../../../components/pageContainer";
 import {Link, useNavigate} from "react-router-dom";
 import {useContext, useState} from "react";
 import {AuthContext} from "../../../services/auth/AuthProvider.tsx";
+import {LoadingButton} from "@mui/lab";
 
 const StyledContainer = styled(Box)(({ theme }) => ({
     width: "100%",
@@ -61,7 +62,13 @@ const Login = () => {
                     name="password"
                     fullWidth
                 />
-                <Button variant="contained" type={"submit"} >Entrar</Button>
+                <LoadingButton
+                    loading={logingIn}
+                    variant="contained"
+                    type={"submit"}
+                >
+                    Entrar
+                </LoadingButton>
                 <Link to="/register" >Criar uma conta</Link>
             </StyledContainer>
         </PageContainer>

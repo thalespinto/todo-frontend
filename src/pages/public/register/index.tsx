@@ -1,9 +1,10 @@
 import {SubmitHandler, useForm} from "react-hook-form";
-import {Box, Button, styled, TextField} from "@mui/material";
+import {Box, styled, TextField} from "@mui/material";
 import PageContainer from "../../../components/pageContainer";
 import {Link, useNavigate} from "react-router-dom";
 import {AuthContext} from "../../../services/auth/AuthProvider.tsx";
-import {useContext} from "react";
+import {useContext, useState} from "react";
+import {LoadingButton} from "@mui/lab";
 
 const StyledContainer = styled(Box)(({ theme }) => ({
     width: "100%",
@@ -30,11 +31,15 @@ type TRegister = {
 const Register = () => {
     const navigate = useNavigate()
 
+    const [registering, setRegistering] = useState(false);
+
     const { register: registerInput, handleSubmit } = useForm<TRegister>()
     const { register } = useContext(AuthContext);
 
     const onSubmit: SubmitHandler<TRegister> = async (data) => {
+        setRegistering(true)
         await register(data)
+        setRegistering(false);
         navigate("/");
     }
 
@@ -66,7 +71,13 @@ const Register = () => {
                     name="password"
                     fullWidth
                 />
-                <Button variant="contained" type={"submit"} >Cadastrar</Button>
+                <LoadingButton
+                    loading={registering}
+                    variant="contained"
+                    type={"submit"}
+                >
+                    Cadastrar
+                </LoadingButton>
                 <Link to="/">Já tem uma conta?</Link>
             </StyledContainer>
         </PageContainer>
