@@ -188,7 +188,7 @@ export default function TodoCard({ todo }: { todo: TTodo }) {
                 ) : (
                     <>
                         <Box
-                            height={"100%"}
+                            minHeight={"140px"}
                             display={"flex"}
                             flexDirection={"column"}
                             alignItems={"start"}
