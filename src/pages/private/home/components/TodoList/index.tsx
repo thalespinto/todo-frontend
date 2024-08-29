@@ -1,5 +1,5 @@
-import {useEffect, useState} from "react";
-import {Box, Button, SelectChangeEvent} from "@mui/material";
+import {useEffect, useState, useTransition} from "react";
+import {Box, Button, InputAdornment, SelectChangeEvent, TextField} from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -8,8 +8,21 @@ import TodoCard from "../../../../../components/TodoCard";
 import {useTodos} from "../../../../../hooks/useTodos.tsx";
 import {TGetQueryOptions} from "../../../../../services/todo/todoApi.types.ts";
 import {OrderBy} from "../../../../../constants/order-by.ts";
+import SearchIcon from '@mui/icons-material/Search';
+import LoadingOverlay from "../../../../../components/LoadingOverlay";
 
 const TodoList = () => {
+    const [isPending, startTransition] = useTransition();
+
+    const [searchInput, setSearchInput] = useState("");
+    const handleChangeSearchInput = (e) => {
+        startTransition(() => {
+            const value = e.target.value;
+            setTodosQuery((prevState) => ({...prevState, title: value}))
+            setSearchInput(value);
+        })
+    }
+
     const [todosQuery, setTodosQuery] = useState<TGetQueryOptions>({
         take: 5
     })
@@ -17,13 +30,27 @@ const TodoList = () => {
     const [filter, setFilter] = useState("Todos");
     const filters = ["Todos", "Concluídas", "A fazer"];
     const handleChangeFilter = (event: SelectChangeEvent) => {
-        setFilter(event.target.value);
+        const value = event.target.value;
+        if(value !== "Todos") {
+            setTodosQuery((prevState) => ({...prevState, done: value === "Concluídas"}))
+        } else {
+            const query = { ...todosQuery };
+            delete query.done;
+            setTodosQuery(query);
+        }
+        setFilter(value);
     };
 
     const [orderBy, setOrderBy] = useState(("Novos"));
     const orderByOptions = ["Novos", "Prazo"];
     const handleChangeOrderBy = (event: SelectChangeEvent) => {
-        setOrderBy(event.target.value);
+        const value = event.target.value;
+        if(value === "Novos") {
+            setTodosQuery((prevState) => ({...prevState, orderBy: OrderBy.CREATED}))
+        } else {
+            setTodosQuery((prevState) => ({...prevState, orderBy: OrderBy.DEADLINE}))
+        }
+        setOrderBy(value);
     };
 
     const { data: getTodosResp, isLoading: gettingTodos } = useTodos(todosQuery);
@@ -33,21 +60,23 @@ const TodoList = () => {
     }
 
     useEffect(() => {
-        if(filter !== "Todos") {
-            setTodosQuery((prevState) => ({...prevState, done: filter === "Concluídas"}))
-        } else {
-            const query = { ...todosQuery };
-            delete query.done;
-            setTodosQuery(query);
-        }
+        // if(filter !== "Todos") {
+        //     setTodosQuery((prevState) => ({...prevState, done: filter === "Concluídas"}))
+        // } else {
+        //     const query = { ...todosQuery };
+        //     delete query.done;
+        //     setTodosQuery(query);
+        // }
 
-        if(orderBy === "Novos") {
-            setTodosQuery((prevState) => ({...prevState, orderBy: OrderBy.CREATED}))
-        } else {
-            setTodosQuery((prevState) => ({...prevState, orderBy: OrderBy.DEADLINE}))
-        }
+        // if(orderBy === "Novos") {
+        //     setTodosQuery((prevState) => ({...prevState, orderBy: OrderBy.CREATED}))
+        // } else {
+        //     setTodosQuery((prevState) => ({...prevState, orderBy: OrderBy.DEADLINE}))
+        // }
 
-    }, [filter, orderBy]);
+
+
+    }, [ searchInput]);
 
     return (
         <Box
@@ -58,7 +87,27 @@ const TodoList = () => {
             alignItems={"center"}
             gap={"10px"}
         >
-            <Box alignSelf={"flex-end"} sx={{ minWidth: 120 }}>
+            <Box
+                display={"flex"}
+                alignItems={"center"}
+                alignSelf={"flex-end"}
+                width={"100%"}
+            >
+                <TextField
+                    label="Pesquisar por nome"
+                    id="search"
+                    value={searchInput}
+                    onChange={handleChangeSearchInput}
+                    slotProps={{
+                        input: {
+                            endAdornment:
+                                <InputAdornment position="start">
+                                    <SearchIcon/>
+                                </InputAdornment>,
+                        },
+                    }}
+                    fullWidth
+                />
                 <FormControl fullWidth>
                     <InputLabel id="filter">Filtrar</InputLabel>
                     <Select
@@ -92,10 +141,13 @@ const TodoList = () => {
                     </Select>
                 </FormControl>
             </Box>
-            {!!getTodosResp?.data &&
-                getTodosResp.data.map((todo) => (
+            {gettingTodos || isPending ? (
+                <LoadingOverlay/>
+            ) : (
+                getTodosResp?.data.map((todo) => (
                     <TodoCard key={todo.id} todo={todo} />
-                ))}
+                ))
+            )}
             <Button
                 variant={"text"}
                 onClick={handleLoadMore}
