@@ -11,6 +11,5 @@ export type TCreateTodo = {
     title: string;
     description: string;
     done?: boolean;
-    deadline: Date;
-    user: number;
+    deadline: string;
 }
