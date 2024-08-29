@@ -1,10 +1,10 @@
-import {createContext, useState, useEffect, ReactNode, useMemo} from 'react';
+import {createContext, useState, ReactNode, useMemo} from 'react';
 import {User} from "../../types/user.types.ts";
 import {AuthApi} from "./authApi.ts";
 import {TSignIn} from "./authApi.types.ts";
+import {api} from "../api.ts";
 
 type AuthContextType = {
-    user: User | null;
     isAuthenticated: boolean;
     login: (userData: User, token: string) => void;
     logout: () => void;
@@ -14,18 +14,10 @@ type AuthContextType = {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [user, setUser] = useState<User | null>(null);
+
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     const authApi = useMemo(() => new AuthApi(), [])
-
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-
-        if (token) {
-            //Todo redirect to login page
-        }
-    }, []);
 
     const register = async (userData: User) => {
         await authApi.register(userData);
@@ -33,24 +25,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const login = async (data: TSignIn) => {
         try{
-            const loginResp =  await authApi.signIn(data);
-            localStorage.setItem('token', JSON.stringify(loginResp.access_token));
-        } catch (e) {
+            const { access_token } =  await authApi.signIn(data);
+            localStorage.setItem('token', access_token);
+            api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+            setIsAuthenticated(true);
+        } catch {
             alert("Erro ao fazer login")
         }
-        setIsAuthenticated(true);
+
     };
+    if(localStorage.getItem('token'))
+        api.defaults.headers.common['Authorization'] = `Bearer ${(localStorage.getItem('token'))}`;
 
     const logout = () => {
-        // Função para fazer logout
         localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setUser(null);
         setIsAuthenticated(false);
     };
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated, login, logout, register }}>
+        <AuthContext.Provider value={{ isAuthenticated, login, logout, register }}>
             {children}
         </AuthContext.Provider>
     );
