@@ -17,6 +17,8 @@ import {useUpdateTodo} from "../../hooks/useUpdateTodo.tsx";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {useDeleteTodo} from "../../hooks/useDeleteTodo.tsx";
 import WarningOutlinedIcon from '@mui/icons-material/WarningOutlined';
+import {MobileDateTimePicker} from "@mui/x-date-pickers/MobileDateTimePicker";
+import dayjs, {Dayjs} from "dayjs";
 
 interface IStyledCard {
     theme: Theme;
@@ -57,10 +59,12 @@ const Card = styled(Muicard)<CustomCardProps>(({theme, editing, done}: IStyledCa
 type TFormSchema = {
     title: string;
     description: string;
+    deadline: string;
 }
 
 export default function TodoCard({ todo }: { todo: TTodo }) {
     const [localTodo, setLocalTodo] = useState(todo)
+    const [deadline, setDeadline] = useState<Dayjs | null>(dayjs(new Date()));
 
     const {register: registerInput, handleSubmit} = useForm<TFormSchema>({
         defaultValues:{
@@ -82,11 +86,15 @@ export default function TodoCard({ todo }: { todo: TTodo }) {
     };
 
     const onSubmit: SubmitHandler<TFormSchema> = async (data) => {
+        const date = deadline?.toDate() || new Date();
+        date.setHours(date.getHours() - 3)
+        data.deadline = date.toISOString()
+
         const updatedTodo = {
-            id: localTodo.id,
+            ...localTodo,
             ...data
         }
-        updateTodo(updatedTodo).then(() => setLocalTodo((prevState) => ({ ...prevState, ...data })));
+        updateTodo(updatedTodo).then(() => setLocalTodo(updatedTodo));
         setEditing(false);
     };
 
@@ -117,7 +125,7 @@ export default function TodoCard({ todo }: { todo: TTodo }) {
     }
 
     const checkDeadline = () => {
-        const deadlineDate = new Date(todo.deadline);
+        const deadlineDate = new Date(localTodo.deadline);
         const now = new Date();
 
         const differenceInTime = deadlineDate.getTime() - now.getTime();
@@ -164,8 +172,15 @@ export default function TodoCard({ todo }: { todo: TTodo }) {
                                     label="Descrição"
                                     variant="outlined"
                                     size="small"
+                                    multiline
                                     rows={3}
 
+                                />
+                                <MobileDateTimePicker
+                                    label={"Prazo"}
+                                    name={"deadline"}
+                                    value={deadline}
+                                    onChange={(newValue) => setDeadline(newValue)}
                                 />
                             </Box>
                         </Box>

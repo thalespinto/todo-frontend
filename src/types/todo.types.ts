@@ -3,7 +3,7 @@ export type TTodo = {
     title: string;
     description: string;
     done: boolean;
-    deadline: Date;
+    deadline: string;
     user: number;
 }
 
