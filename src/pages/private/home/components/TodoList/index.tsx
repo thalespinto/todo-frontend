@@ -59,25 +59,6 @@ const TodoList = () => {
         setTodosQuery((prevState) => ({...prevState, ...{ take: todosQuery.take! + 5 }}))
     }
 
-    useEffect(() => {
-        // if(filter !== "Todos") {
-        //     setTodosQuery((prevState) => ({...prevState, done: filter === "Concluídas"}))
-        // } else {
-        //     const query = { ...todosQuery };
-        //     delete query.done;
-        //     setTodosQuery(query);
-        // }
-
-        // if(orderBy === "Novos") {
-        //     setTodosQuery((prevState) => ({...prevState, orderBy: OrderBy.CREATED}))
-        // } else {
-        //     setTodosQuery((prevState) => ({...prevState, orderBy: OrderBy.DEADLINE}))
-        // }
-
-
-
-    }, [ searchInput]);
-
     return (
         <Box
             width={"100%"}
