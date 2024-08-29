@@ -5,9 +5,9 @@ import {Link, useNavigate} from "react-router-dom";
 import {AuthContext} from "../../../services/auth/AuthProvider.tsx";
 import {useContext, useState} from "react";
 import {LoadingButton} from "@mui/lab";
+import {ToastType, useToast} from "../../../hooks/useToast.tsx";
 
 const StyledContainer = styled(Box)(({ theme }) => ({
-    width: "100%",
     backgroundColor: theme.palette.grey["50"],
     display:"flex",
     flexDirection:"column",
@@ -29,6 +29,7 @@ type TRegister = {
 }
 
 const Register = () => {
+    const { showToast } = useToast()
     const navigate = useNavigate()
 
     const [registering, setRegistering] = useState(false);
@@ -38,9 +39,20 @@ const Register = () => {
 
     const onSubmit: SubmitHandler<TRegister> = async (data) => {
         setRegistering(true)
-        await register(data)
-        setRegistering(false);
-        navigate("/");
+        register(data).then(() => {
+            showToast({
+                title: "Registro efetuado!",
+                type: ToastType.SUCCESS
+            })
+            navigate("/");
+        }).catch(() => {
+            showToast({
+                title: "Erro ao fazer registro",
+                type: ToastType.ERROR
+            })
+        }).finally(()=> setRegistering(false))
+
+
     }
 
     return(

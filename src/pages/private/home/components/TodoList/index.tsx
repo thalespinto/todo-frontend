@@ -1,4 +1,4 @@
-import {useEffect, useState, useTransition} from "react";
+import {useState, useTransition} from "react";
 import {Box, Button, InputAdornment, SelectChangeEvent, TextField} from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -10,8 +10,11 @@ import {TGetQueryOptions} from "../../../../../services/todo/todoApi.types.ts";
 import {OrderBy} from "../../../../../constants/order-by.ts";
 import SearchIcon from '@mui/icons-material/Search';
 import LoadingOverlay from "../../../../../components/LoadingOverlay";
+import {ToastType, useToast} from "../../../../../hooks/useToast.tsx";
 
 const TodoList = () => {
+    const { showToast } = useToast()
+
     const [isPending, startTransition] = useTransition();
 
     const [searchInput, setSearchInput] = useState("");
@@ -53,7 +56,11 @@ const TodoList = () => {
         setOrderBy(value);
     };
 
-    const { data: getTodosResp, isLoading: gettingTodos } = useTodos(todosQuery);
+    const { data: getTodosResp, isLoading: gettingTodos, isError: gettingTodosError } = useTodos(todosQuery);
+    if(gettingTodosError) showToast({
+        title: "Erro ao buscar Todos",
+        type: ToastType.ERROR
+    });
 
     const handleLoadMore = () => {
         setTodosQuery((prevState) => ({...prevState, ...{ take: todosQuery.take! + 5 }}))

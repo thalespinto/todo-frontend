@@ -1,8 +1,9 @@
-import {createContext, useState, ReactNode, useMemo} from 'react';
+import {createContext, ReactNode, useMemo, useState} from 'react';
 import {User} from "../../types/user.types.ts";
 import {AuthApi} from "./authApi.ts";
 import {TSignIn} from "./authApi.types.ts";
 import {api} from "../api.ts";
+import {ToastType, useToast} from "../../hooks/useToast.tsx";
 
 type AuthContextType = {
     isAuthenticated: boolean;
@@ -14,13 +15,13 @@ type AuthContextType = {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-
+    const { showToast } = useToast()
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     const authApi = useMemo(() => new AuthApi(), [])
 
     const register = async (userData: User) => {
-        await authApi.register(userData);
+        await authApi.register(userData)
     }
 
     const login = async (data: TSignIn) => {
@@ -29,8 +30,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             localStorage.setItem('token', access_token);
             api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
             setIsAuthenticated(true);
-        } catch {
-            alert("Erro ao fazer login")
+        } catch (e) {
+            showToast(
+                {
+                    title: "Erro ao fazer login",
+                    type: ToastType.ERROR
+                }
+            );
         }
 
     };
