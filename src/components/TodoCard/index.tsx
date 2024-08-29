@@ -30,7 +30,8 @@ interface CustomCardProps extends CardProps {
 }
 
 const Card = styled(Muicard)<CustomCardProps>(({theme, editing, done}: IStyledCard) => ({
-    height: "120px",
+    height: "fit-content",
+    minHeight: "120px",
     backgroundColor: done
         ? theme.palette.success.light
         : theme.palette.grey[100],
@@ -182,7 +183,16 @@ export default function TodoCard({ todo }: { todo: TTodo }) {
                         >
                             <Box>
                                 <Typography variant="h5">{localTodo.title}</Typography>
-                                <Typography variant="subtitle1">
+                                <Typography
+                                    component={"p"}
+                                    variant="subtitle1"
+                                    sx={{
+                                        maxWidth: "490px",
+                                        maxHeight: "200px",
+                                        textOverflow: "ellipsis",
+                                        overflow: "hidden"
+                                    }}
+                                >
                                     {localTodo.description}
                                 </Typography>
                             </Box>
