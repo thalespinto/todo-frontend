@@ -7,18 +7,24 @@ import Select from "@mui/material/Select";
 import TodoCard from "../../../../../components/TodoCard";
 import {useTodos} from "../../../../../hooks/useTodos.tsx";
 import {TGetQueryOptions} from "../../../../../services/todo/todoApi.types.ts";
+import {OrderBy} from "../../../../../constants/order-by.ts";
 
 const TodoList = () => {
     const [todosQuery, setTodosQuery] = useState<TGetQueryOptions>({})
 
     const [filter, setFilter] = useState("Todos");
     const filters = ["Todos", "Concluídas", "A fazer"];
-
-    const { data: getTodosResp } = useTodos(todosQuery);
-
     const handleChangeFilter = (event: SelectChangeEvent) => {
         setFilter(event.target.value);
     };
+
+    const [orderBy, setOrderBy] = useState(("Novos"));
+    const orderByOptions = ["Novos", "Prazo"];
+    const handleChangeOrderBy = (event: SelectChangeEvent) => {
+        setOrderBy(event.target.value);
+    };
+
+    const { data: getTodosResp } = useTodos(todosQuery);
 
     useEffect(() => {
         if(filter !== "Todos") {
@@ -28,7 +34,14 @@ const TodoList = () => {
             delete query.done;
             setTodosQuery(query);
         }
-    }, [filter]);
+
+        if(orderBy === "Novos") {
+            setTodosQuery((prevState) => ({...prevState, orderBy: OrderBy.CREATED}))
+        } else {
+            setTodosQuery((prevState) => ({...prevState, orderBy: OrderBy.DEADLINE}))
+        }
+
+    }, [filter, orderBy]);
 
     return (
         <Box
@@ -53,6 +66,22 @@ const TodoList = () => {
                     >
                         {filters.map((filter) => (
                             <MenuItem key={filter} value={filter}>{filter}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <FormControl fullWidth>
+                    <InputLabel id="filter">Ordenar</InputLabel>
+                    <Select
+                        variant={"outlined"}
+                        labelId="order"
+                        id="order-by-select"
+                        value={orderBy}
+                        label="Order"
+                        onChange={handleChangeOrderBy}
+                        size="small"
+                    >
+                        {orderByOptions.map((orderByOption) => (
+                            <MenuItem key={orderByOption} value={orderByOption}>{orderByOption}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
