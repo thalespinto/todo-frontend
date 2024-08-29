@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Theme } from "@mui/material/styles";
-import {CardProps, styled, useTheme} from "@mui/material";
+import {CardProps, styled} from "@mui/material";
 import {
     Card as Muicard,
     Typography,
@@ -60,8 +60,6 @@ type TFormSchema = {
 }
 
 export default function TodoCard({ todo }: { todo: TTodo }) {
-    const theme = useTheme();
-
     const [localTodo, setLocalTodo] = useState(todo)
 
     const {register: registerInput, handleSubmit} = useForm<TFormSchema>({
@@ -99,7 +97,7 @@ export default function TodoCard({ todo }: { todo: TTodo }) {
         }
 
         updateTodo(updatedTodo)
-            .then(() => setLocalTodo(updatedTodo))
+            .then(() => setLocalTodo(() => (updatedTodo)))
     };
 
     const handleDeleteTodo = async () => {
@@ -196,7 +194,7 @@ export default function TodoCard({ todo }: { todo: TTodo }) {
                                     {localTodo.description}
                                 </Typography>
                             </Box>
-                            {!todo.done && (
+                            {!localTodo.done && (
                                 <Box
                                     display={"flex"}
                                     gap={".5em"}
