@@ -7,7 +7,6 @@ import {AuthContext} from "../../../services/auth/AuthProvider.tsx";
 import {LoadingButton} from "@mui/lab";
 
 const StyledContainer = styled(Box)(({ theme }) => ({
-    width: "100%",
     backgroundColor: theme.palette.grey["50"],
     display:"flex",
     flexDirection:"column",
