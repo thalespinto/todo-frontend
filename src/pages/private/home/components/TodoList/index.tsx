@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Box, SelectChangeEvent} from "@mui/material";
+import {Box, Button, SelectChangeEvent} from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -10,7 +10,9 @@ import {TGetQueryOptions} from "../../../../../services/todo/todoApi.types.ts";
 import {OrderBy} from "../../../../../constants/order-by.ts";
 
 const TodoList = () => {
-    const [todosQuery, setTodosQuery] = useState<TGetQueryOptions>({})
+    const [todosQuery, setTodosQuery] = useState<TGetQueryOptions>({
+        take: 5
+    })
 
     const [filter, setFilter] = useState("Todos");
     const filters = ["Todos", "Concluídas", "A fazer"];
@@ -24,7 +26,11 @@ const TodoList = () => {
         setOrderBy(event.target.value);
     };
 
-    const { data: getTodosResp } = useTodos(todosQuery);
+    const { data: getTodosResp, isLoading: gettingTodos } = useTodos(todosQuery);
+
+    const handleLoadMore = () => {
+        setTodosQuery((prevState) => ({...prevState, ...{ take: todosQuery.take! + 5 }}))
+    }
 
     useEffect(() => {
         if(filter !== "Todos") {
@@ -90,6 +96,13 @@ const TodoList = () => {
                 getTodosResp.data.map((todo) => (
                     <TodoCard key={todo.id} todo={todo} />
                 ))}
+            <Button
+                variant={"text"}
+                onClick={handleLoadMore}
+                disabled={!getTodosResp?.meta.hasNextPage}
+            >
+                Carregar mais...
+            </Button>
         </Box>
     );
 };
