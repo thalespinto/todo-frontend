@@ -5,7 +5,6 @@ import {TSignIn} from "./authApi.types.ts";
 import {api} from "../api.ts";
 
 type AuthContextType = {
-    user: User | null;
     isAuthenticated: boolean;
     login: (userData: User, token: string) => void;
     logout: () => void;
@@ -15,7 +14,7 @@ type AuthContextType = {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [user, setUser] = useState<User | null>(null);
+
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     const authApi = useMemo(() => new AuthApi(), [])
@@ -39,15 +38,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         api.defaults.headers.common['Authorization'] = `Bearer ${(localStorage.getItem('token'))}`;
 
     const logout = () => {
-        // Função para fazer logout
         localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setUser(null);
         setIsAuthenticated(false);
     };
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated, login, logout, register }}>
+        <AuthContext.Provider value={{ isAuthenticated, login, logout, register }}>
             {children}
         </AuthContext.Provider>
     );
