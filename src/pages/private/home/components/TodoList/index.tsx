@@ -11,6 +11,7 @@ import {OrderBy} from "../../../../../constants/order-by.ts";
 import SearchIcon from '@mui/icons-material/Search';
 import LoadingOverlay from "../../../../../components/LoadingOverlay";
 import {ToastType, useToast} from "../../../../../hooks/useToast.tsx";
+import {Order} from "../../../../../constants/order.ts";
 
 const TodoList = () => {
     const { showToast } = useToast()
@@ -27,7 +28,9 @@ const TodoList = () => {
     }
 
     const [todosQuery, setTodosQuery] = useState<TGetQueryOptions>({
-        take: 5
+        take: 5,
+        orderBy: OrderBy.CREATED,
+        order: Order.DESC
     })
 
     const [filter, setFilter] = useState("Todos");
@@ -49,9 +52,17 @@ const TodoList = () => {
     const handleChangeOrderBy = (event: SelectChangeEvent) => {
         const value = event.target.value;
         if(value === "Novos") {
-            setTodosQuery((prevState) => ({...prevState, orderBy: OrderBy.CREATED}))
+            setTodosQuery((prevState) => ({
+                ...prevState,
+                orderBy: OrderBy.CREATED,
+                order: Order.DESC
+            }))
         } else {
-            setTodosQuery((prevState) => ({...prevState, orderBy: OrderBy.DEADLINE}))
+            setTodosQuery((prevState) => ({
+                ...prevState,
+                orderBy: OrderBy.DEADLINE,
+                order: Order.ASC
+            }))
         }
         setOrderBy(value);
     };
