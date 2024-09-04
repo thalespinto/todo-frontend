@@ -6,7 +6,12 @@ import LogoutIcon from "@mui/icons-material/Logout";
 
 const LogoutButton = () => {
     const navigate = useNavigate();
-    const { logout } = useContext(AuthContext);
+    const authContext = useContext(AuthContext);
+    if (!authContext) {
+        throw new Error("AuthContext must be used within an AuthProvider");
+    }
+
+    const { logout } = authContext;
 
     const handleLogout = () => {
         logout()

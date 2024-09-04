@@ -32,7 +32,13 @@ const Login = () => {
     const [logingIn, setLogingIn] = useState(false);
 
     const {register: registerInput, handleSubmit} = useForm<TLogin>()
-    const { login } = useContext(AuthContext);
+    const authContext = useContext(AuthContext);
+
+    if (!authContext) {
+        throw new Error("AuthContext must be used within an AuthProvider");
+    }
+
+    const { login } = authContext;
     const onSubmit: SubmitHandler<TLogin> = async (data) => {
         setLogingIn(true);
         await login(data);

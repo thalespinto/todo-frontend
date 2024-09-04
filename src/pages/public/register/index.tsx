@@ -35,7 +35,12 @@ const Register = () => {
     const [registering, setRegistering] = useState(false);
 
     const { register: registerInput, handleSubmit } = useForm<TRegister>()
-    const { register } = useContext(AuthContext);
+    const authContext = useContext(AuthContext);
+    if (!authContext) {
+        throw new Error("AuthContext must be used within an AuthProvider");
+    }
+
+    const { register } = authContext;
 
     const onSubmit: SubmitHandler<TRegister> = async (data) => {
         setRegistering(true)
