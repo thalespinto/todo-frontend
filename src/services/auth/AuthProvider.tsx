@@ -7,7 +7,7 @@ import {ToastType, useToast} from "../../hooks/useToast.tsx";
 
 type AuthContextType = {
     isAuthenticated: boolean;
-    login: (userData: User, token: string) => void;
+    login: (userData: Pick<User, "email" | "password">) => Promise<void>;
     logout: () => void;
     register: (userData: User) => Promise<void>;
 };
@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             localStorage.setItem('token', access_token);
             api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
             setIsAuthenticated(true);
-        } catch (e) {
+        } catch {
             showToast(
                 {
                     title: "Erro ao fazer login",

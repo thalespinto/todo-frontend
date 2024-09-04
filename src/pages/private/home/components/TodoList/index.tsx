@@ -1,4 +1,4 @@
-import {useState, useTransition} from "react";
+import {ChangeEvent, useState, useTransition} from "react";
 import {Box, Button, InputAdornment, SelectChangeEvent, TextField} from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -19,7 +19,7 @@ const TodoList = () => {
     const [isPending, startTransition] = useTransition();
 
     const [searchInput, setSearchInput] = useState("");
-    const handleChangeSearchInput = (e) => {
+    const handleChangeSearchInput = (e: ChangeEvent<HTMLInputElement>) => {
         startTransition(() => {
             const value = e.target.value;
             setTodosQuery((prevState) => ({...prevState, title: value}))
